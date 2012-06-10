@@ -8,11 +8,97 @@
 		
 		<title>Realtime chat</title>
 
+		<script src="/socket.io/socket.io.js"></script>
+
+		<script>
+
+
+			var place;
+
+			function speak( nick, text ) {
+
+				var user;
+
+				for( var node in place.childNodes )
+					if( place.childNodes[node].id === nick ) {
+						user = place.childNodes[node];
+						break;
+					}
+
+				if( !user ) {
+					var user = document.createElement( "div" );
+					user.id = nick;
+					place.appendChild( user );
+				}
+
+				user.innerHTML = nick + ": " + text;
+
+			}
+
+			function unspeak( nick ) {
+
+				for( var node in place.childNodes )
+					if( place.childNodes[node].id === nick ) {
+						place.removeChild( place.childNodes[node] );
+						break;
+					}
+
+			}
+
+			document.addEventListener( "DOMContentLoaded", function() {
+
+				place = document.getElementById( "place" );
+
+				var server = io.connect( document.location.origin );
+				server.on( "status", function( data ) { //Will recive "bye" too.
+					switch( data["type"] ) {
+						case "status":
+							speak( "status", data["text"] );
+							break;
+						case "bye":
+							unspeak( data["nick"] );
+					}
+				} );
+
+				server.on( "message", function( data ) {
+					speak( data["nick"], data["text"] );
+				} );
+
+				var text = "";
+				document.addEventListener( "keyup", function( event ) {
+					var char = event.keyCode || e.which;
+					if( char === 13 || char === 27 ) {
+						server.send( text );
+						text = "";
+					}
+					if( char >= 65 && char <= 90 )
+						text += String.fromCharCode( char );
+				}, false );
+
+			}, false );
+
+
+		</script>
+
+		<style>
+
+			* {
+				font-family: Helvetica, Tahoma;
+				font-size: 20px;
+			}
+
+		</style>
+
 	</head>
 
 	<body>
 
 		<div id="wrapper">
+			
+			<p>Server is working properly. Page loaded successfuly.</p>
+
+			<div id="place"></div>
+
 		</div>
 
 	</body>
