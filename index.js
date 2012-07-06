@@ -39,7 +39,7 @@ iod.sockets.on( "connection", function( client ) {
 
 	//nicks[client.id] = "random" + random++;
 	// client.nick = "random" + random++;
-	var nick = "random" + random++;
+	var nick = "random" + ( random++ );
 
 	// iod.sockets.emit( "message", { nick: nick, text: "" } );
 
@@ -54,7 +54,7 @@ iod.sockets.on( "connection", function( client ) {
 			.replace( /\>/g, "&gt;" )
 			.replace( /\&/g, "&amp;" )
 			.replace( /\"/g, "&quot;" )
-			.replace( /\n/g, "<br />" );
+			.replace( /\n/g, "<br />" ); //To do: replace only 10
 		var data = {
 			id: client.id,
 			nick: nick,
