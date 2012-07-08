@@ -10,13 +10,12 @@ var
 	io = require( "socket.io" );
 
 var
-	_base = __dirname,
 	_port = 40008;
 
 
 var httpd = http.createServer( function( request, response ) {
 
-	fs.readFile( _base + "/index.html", function( error, data ) {
+	fs.readFile( __dirname + "/index.html", function( error, data ) {
 		if( error ) {
 			response.writeHead( 500 );
 			respnose.end( "Lol, no index.html?" );
@@ -33,7 +32,8 @@ httpd.listen( _port );
 
 var
 	random = 1,
-	text_limit = 300;
+	text_limit = 300,
+	text_lines = 5;
 
 iod.sockets.on( "connection", function( client ) {
 
@@ -43,7 +43,7 @@ iod.sockets.on( "connection", function( client ) {
 
 	// iod.sockets.emit( "message", { nick: nick, text: "" } );
 
-	//Get user list too.
+	//To do: Get user list.
 
 	client.on( "message", function( text ) {
 		if( text.length > text_limit )
@@ -53,8 +53,9 @@ iod.sockets.on( "connection", function( client ) {
 			.replace( /\</g, "&lt;" )
 			.replace( /\>/g, "&gt;" )
 			.replace( /\&/g, "&amp;" )
-			.replace( /\"/g, "&quot;" )
-			.replace( /\n/g, "<br />" ); //To do: replace only 10
+			.replace( /\"/g, "&quot;" );
+		for( var i = 0; i < text_lines; i++ ) // Replace only text_lines times.
+			text = text.replace( /\n/, "<br />" );
 		var data = {
 			id: client.id,
 			nick: nick,
