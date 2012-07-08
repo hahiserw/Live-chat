@@ -27,7 +27,8 @@ var httpd = http.createServer( function( request, response ) {
 
 } );
 
-var iod = io.listen( httpd );
+var server = io.listen( httpd ).sockets;
+
 httpd.listen( _port );
 
 var
@@ -35,13 +36,13 @@ var
 	text_limit = 300,
 	text_lines = 5;
 
-iod.sockets.on( "connection", function( client ) {
+server.on( "connection", function( client ) {
 
 	//nicks[client.id] = "random" + random++;
 	// client.nick = "random" + random++;
 	var nick = "random" + ( random++ );
 
-	// iod.sockets.emit( "message", { nick: nick, text: "" } );
+	// server.emit( "message", { nick: nick, text: "" } );
 
 	//To do: Get user list.
 
@@ -54,14 +55,14 @@ iod.sockets.on( "connection", function( client ) {
 			.replace( /\>/g, "&gt;" )
 			.replace( /\&/g, "&amp;" )
 			.replace( /\"/g, "&quot;" );
-		for( var i = 0; i < text_lines; i++ ) // Replace only text_lines times.
+		for( var i = 1; i < text_lines; i++ ) // Replace only text_lines times.
 			text = text.replace( /\n/, "<br />" );
 		var data = {
 			id: client.id,
 			nick: nick,
 			text: text
 		};
-		iod.sockets.emit( "message", data );
+		server.emit( "message", data );
 	} );
 
 	client.on( "rename", function( name ) {
@@ -73,7 +74,7 @@ iod.sockets.on( "connection", function( client ) {
 			type: "bye",
 			id: client.id
 		}
-		iod.sockets.emit( "status", data );
+		server.emit( "status", data );
 	} );
 
 } );
