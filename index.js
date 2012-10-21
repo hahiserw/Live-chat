@@ -27,9 +27,9 @@ var httpd = http.createServer( function( request, response ) {
 
 } );
 
-var server = io.listen( httpd ).sockets;
-
 httpd.listen( _port );
+
+var server = io.listen( httpd ).sockets;
 
 var
 	random = 1,
